@@ -1,0 +1,18 @@
+{
+  "name": "jenkins",
+  "domain": "ci-cd",
+  "commands": {
+    "health":   null,
+    "search":   null,
+    "read":     null,
+    "create":   null,
+    "update":   null,
+    "discover": null
+  },
+  "env": [
+    {"name": "JENKINS_BASE_URL", "required": true, "description": "Jenkins base URL"},
+    {"name": "JENKINS_USER",     "required": true, "description": "Jenkins username"},
+    {"name": "JENKINS_API_TOKEN","required": true, "description": "Jenkins API token"}
+  ],
+  "outputs": {"format": "json", "path": ".ai-sdlc/adapter-out/"}
+}

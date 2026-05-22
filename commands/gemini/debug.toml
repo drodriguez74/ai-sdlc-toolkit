@@ -1,0 +1,8 @@
+description = "Diagnose and fix a bug; add a guard test or monitor"
+prompt = """
+Follow prompts/debug.prompt.md.
+
+Load skills/using-agent-skills/SKILL.md.
+Follow skills/debugging-and-error-recovery/SKILL.md.
+Reproduce, localize, fix root cause, guard with test or monitor.
+"""

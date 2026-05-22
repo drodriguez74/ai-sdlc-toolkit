@@ -1,0 +1,10 @@
+description = "Render project-specific overrides for agents, skills, prompts"
+prompt = """
+Follow prompts/tune-agents.prompt.md.
+
+Load skills/using-agent-skills/SKILL.md.
+Follow skills/agent-tuning/SKILL.md.
+Read .ai-sdlc/project-profile.yaml, project-context.md, tune-prompt.md.
+Render overrides into .github/*-overrides/.
+Run refresh-project-links.sh to activate.
+"""

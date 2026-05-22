@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "title": "Adapter Manifest",
+  "type": "object",
+  "required": ["name", "domain", "commands"],
+  "properties": {
+    "name":   {"type": "string"},
+    "domain": {"enum": ["issue-tracker", "scm", "ci-cd", "knowledge", "observability", "cloud", "security"]},
+    "commands": {
+      "type": "object",
+      "additionalProperties": {"type": ["string", "null"]}
+    },
+    "env": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name"],
+        "properties": {
+          "name":        {"type": "string"},
+          "required":    {"type": "boolean"},
+          "description": {"type": "string"}
+        }
+      }
+    },
+    "outputs": {
+      "type": "object",
+      "properties": {
+        "format": {"enum": ["json", "markdown"]},
+        "path":   {"type": "string"}
+      }
+    }
+  }
+}

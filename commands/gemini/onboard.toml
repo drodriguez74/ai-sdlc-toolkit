@@ -1,0 +1,9 @@
+description = "Fully onboard to a repo — profile the workspace then generate the knowledge base in one pass"
+prompt = """
+Follow prompts/onboard.prompt.md.
+
+Load skills/using-agent-skills/SKILL.md.
+Follow skills/workspace-analysis/SKILL.md.
+Follow skills/repo-knowledge-generation/SKILL.md.
+Adopt the workspace-analyzer agent.
+"""

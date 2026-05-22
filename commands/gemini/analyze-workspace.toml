@@ -1,0 +1,8 @@
+description = "Profile the repo and write project profile and context"
+prompt = """
+Follow prompts/analyze-workspace.prompt.md.
+
+Load skills/using-agent-skills/SKILL.md.
+Follow skills/workspace-analysis/SKILL.md.
+Adopt the workspace-analyzer agent.
+"""

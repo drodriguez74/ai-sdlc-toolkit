@@ -1,0 +1,10 @@
+description = "Implement one task from the plan in a thin, verifiable slice"
+prompt = """
+Follow prompts/build.prompt.md.
+
+Load skills/using-agent-skills/SKILL.md.
+Follow skills/incremental-implementation/SKILL.md.
+Apply skills/test-driven-development/SKILL.md for behavior changes.
+Apply skills/source-driven-development/SKILL.md for framework-dependent code.
+Adopt the appropriate developer agent.
+"""

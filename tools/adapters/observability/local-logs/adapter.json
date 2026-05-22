@@ -1,0 +1,13 @@
+{
+  "name": "local-logs",
+  "domain": "observability",
+  "commands": {
+    "health": null,
+    "search": null,
+    "read":   null
+  },
+  "env": [
+    {"name": "LOGS_ROOT", "required": false, "description": "Default: ./logs or /var/log/app"}
+  ],
+  "outputs": {"format": "markdown", "path": ".ai-sdlc/adapter-out/"}
+}

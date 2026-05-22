@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Install-time rendered output (manifest.json.tpl is the source of truth)
+manifest.json
+
+# Upgrade backups
+*.bak.*/
+ai-sdlc-toolkit.bak.*/
+
+# Adapter runtime output and project-local state when run in-repo
+.ai-sdlc/adapter-out/
+
+# Environment / secrets
+.env
+*.local
+
+# Claude Code personal settings (machine-specific; shared permissions go in settings.json)
+.claude/settings.local.json
+
+# Editor
+.idea/
+.vscode/
+*.swp

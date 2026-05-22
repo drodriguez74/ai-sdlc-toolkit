@@ -1,0 +1,17 @@
+{
+  "name": "github-issues",
+  "domain": "issue-tracker",
+  "commands": {
+    "health":  "scripts/issue_search.py --help",
+    "search":  "scripts/issue_search.py",
+    "read":    "scripts/issue_read.py",
+    "create":  "scripts/issue_create.py",
+    "update":  "scripts/issue_update.py",
+    "discover": null
+  },
+  "env": [
+    {"name": "GITHUB_TOKEN", "required": true,  "description": "GitHub PAT with repo scope"},
+    {"name": "GITHUB_REPO",  "required": true,  "description": "owner/repo"}
+  ],
+  "outputs": {"format": "json", "path": ".ai-sdlc/adapter-out/"}
+}

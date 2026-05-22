@@ -1,0 +1,10 @@
+description = "Turn a spec into ordered, implementable tasks"
+prompt = """
+Follow prompts/plan.prompt.md.
+
+Load skills/using-agent-skills/SKILL.md.
+Read the target spec.
+Follow skills/planning-and-task-breakdown/SKILL.md.
+Adopt the tech-lead agent.
+Save the plan to docs/plans/<name>.md.
+"""

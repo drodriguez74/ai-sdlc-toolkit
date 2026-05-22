@@ -1,0 +1,18 @@
+{
+  "name": "github-projects",
+  "domain": "issue-tracker",
+  "commands": {
+    "health":        "scripts/project_list.py --max 1",
+    "discover":      "scripts/project_list.py",
+    "search":        "scripts/project_list.py",
+    "read":          "scripts/project_items.py",
+    "create":        null,
+    "update":        null
+  },
+  "env": [
+    {"name": "GITHUB_TOKEN", "required": true,  "description": "PAT with read:project scope"},
+    {"name": "GITHUB_OWNER", "required": true,  "description": "Org login or GitHub username"}
+  ],
+  "outputs": {"format": "json", "path": ".ai-sdlc/adapter-out/"},
+  "notes": "Uses GraphQL API (https://api.github.com/graphql). GITHUB_OWNER is the org or user login, not owner/repo."
+}

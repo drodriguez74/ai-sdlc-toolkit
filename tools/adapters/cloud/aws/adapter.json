@@ -1,0 +1,14 @@
+{
+  "name": "aws",
+  "domain": "cloud",
+  "commands": {
+    "health":   null,
+    "discover": null,
+    "read":     null
+  },
+  "env": [
+    {"name": "AWS_REGION",  "required": true,  "description": "AWS region"},
+    {"name": "AWS_PROFILE", "required": false, "description": "Named profile in ~/.aws/credentials"}
+  ],
+  "outputs": {"format": "json", "path": ".ai-sdlc/adapter-out/"}
+}

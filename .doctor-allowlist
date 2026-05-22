@@ -1,0 +1,13 @@
+# Patterns to exclude from doctor.sh secret scan.
+# One regex per line. Lines starting with # are comments.
+# Each pattern matches a substring of the apparent secret; matches are ignored.
+#
+# Placeholders we use in templates:
+__TOOLKIT_HOME__
+EXAMPLE_TOKEN
+PLACEHOLDER
+#
+# Suppress matches that are themselves regex literals (containing regex
+# metacharacters — real PEM headers do not contain these):
+\[\^
+\.\* PRIVATE

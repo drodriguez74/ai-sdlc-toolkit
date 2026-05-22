@@ -1,0 +1,13 @@
+{
+  "name": "gcp",
+  "domain": "cloud",
+  "commands": {
+    "health":   null,
+    "discover": null,
+    "read":     null
+  },
+  "env": [
+    {"name": "GCP_PROJECT", "required": true, "description": "GCP project ID"}
+  ],
+  "outputs": {"format": "json", "path": ".ai-sdlc/adapter-out/"}
+}

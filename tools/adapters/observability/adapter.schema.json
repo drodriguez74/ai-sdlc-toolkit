@@ -1,0 +1,5 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "title": "Observability Adapter",
+  "allOf": [{"$ref": "../../../schemas/adapter.schema.json"}]
+}

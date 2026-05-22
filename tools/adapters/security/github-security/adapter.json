@@ -1,0 +1,15 @@
+{
+  "name": "github-security",
+  "domain": "security",
+  "commands": {
+    "health":               "scripts/dependabot_list.py --max 1",
+    "dependabot_list":      "scripts/dependabot_list.py",
+    "code_scanning_list":   "scripts/code_scanning_list.py",
+    "secret_scanning_list": "scripts/secret_scanning_list.py"
+  },
+  "env": [
+    {"name": "GITHUB_TOKEN", "required": true,  "description": "PAT with security_events scope (and repo admin for secret scanning)"},
+    {"name": "GITHUB_REPO",  "required": true,  "description": "owner/repo"}
+  ],
+  "outputs": {"format": "json", "path": ".ai-sdlc/adapter-out/"}
+}

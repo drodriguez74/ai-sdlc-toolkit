@@ -1,0 +1,8 @@
+description = "Simplify code without behavior change; requires existing tests"
+prompt = """
+Follow prompts/simplify.prompt.md.
+
+Load skills/using-agent-skills/SKILL.md.
+Follow skills/code-simplification/SKILL.md.
+Verify tests pass before and after.
+"""

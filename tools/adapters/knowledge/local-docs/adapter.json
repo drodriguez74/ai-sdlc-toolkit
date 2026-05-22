@@ -1,0 +1,14 @@
+{
+  "name": "local-docs",
+  "domain": "knowledge",
+  "commands": {
+    "health":   null,
+    "search":   null,
+    "read":     null,
+    "discover": null
+  },
+  "env": [
+    {"name": "DOCS_ROOT", "required": false, "description": "Default: docs/ in current repo"}
+  ],
+  "outputs": {"format": "markdown", "path": ".ai-sdlc/adapter-out/"}
+}

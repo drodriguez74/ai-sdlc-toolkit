@@ -1,0 +1,18 @@
+{
+  "name": "gitlab-ci",
+  "domain": "ci-cd",
+  "commands": {
+    "health":   null,
+    "search":   null,
+    "read":     null,
+    "create":   null,
+    "update":   null,
+    "discover": null
+  },
+  "env": [
+    {"name": "GITLAB_TOKEN",   "required": true,  "description": "GitLab PAT"},
+    {"name": "GITLAB_PROJECT", "required": true,  "description": "project ID or path"},
+    {"name": "GITLAB_BASE_URL","required": false, "description": "default https://gitlab.com"}
+  ],
+  "outputs": {"format": "json", "path": ".ai-sdlc/adapter-out/"}
+}

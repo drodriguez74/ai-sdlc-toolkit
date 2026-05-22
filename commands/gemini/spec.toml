@@ -1,0 +1,10 @@
+description = "Write a specification before implementation"
+prompt = """
+Follow prompts/spec.prompt.md.
+
+Load skills/using-agent-skills/SKILL.md.
+If requirements are unclear, follow skills/interview-me/SKILL.md.
+Follow skills/spec-driven-development/SKILL.md.
+Adopt the product-manager or tech-lead agent perspective.
+Save the spec to docs/specs/<name>.md.
+"""

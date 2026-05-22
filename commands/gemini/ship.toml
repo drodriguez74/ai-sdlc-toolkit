@@ -1,0 +1,11 @@
+description = "Decide GO/NO-GO for a release with multi-dimensional review"
+prompt = """
+Follow prompts/ship.prompt.md.
+
+Load skills/using-agent-skills/SKILL.md.
+Follow skills/shipping-and-launch/SKILL.md.
+Fan out to code-reviewer, security-auditor, test-engineer, performance-reviewer
+(if perf-sensitive), data-reviewer (if data changed). If subagents not supported,
+run sequentially.
+Adopt the release-manager agent for the merged decision.
+"""

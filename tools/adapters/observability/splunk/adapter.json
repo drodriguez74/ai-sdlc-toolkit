@@ -1,0 +1,14 @@
+{
+  "name": "splunk",
+  "domain": "observability",
+  "commands": {
+    "health": null,
+    "search": null,
+    "read":   null
+  },
+  "env": [
+    {"name": "SPLUNK_BASE_URL", "required": true, "description": "Splunk REST base URL"},
+    {"name": "SPLUNK_TOKEN",    "required": true, "description": "HEC or REST token"}
+  ],
+  "outputs": {"format": "json", "path": ".ai-sdlc/adapter-out/"}
+}

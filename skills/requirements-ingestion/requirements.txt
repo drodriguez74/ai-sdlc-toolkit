@@ -1,0 +1,4 @@
+# Optional dependencies for requirements-ingestion skill.
+# Install only if you actively use BRD/PDF/DOCX/CSV ingestion.
+pdfplumber>=0.10
+python-docx>=1.1

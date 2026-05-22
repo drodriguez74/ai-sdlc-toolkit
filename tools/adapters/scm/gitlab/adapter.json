@@ -1,0 +1,15 @@
+{
+  "name": "gitlab",
+  "domain": "scm",
+  "commands": {
+    "health":   "scripts/mr_read.py --help",
+    "mr_read":  "scripts/mr_read.py",
+    "mr_review":"scripts/mr_review.py"
+  },
+  "env": [
+    {"name": "GITLAB_TOKEN",   "required": true, "description": "GitLab PAT with api scope"},
+    {"name": "GITLAB_PROJECT", "required": true, "description": "project ID or path-encoded full path"},
+    {"name": "GITLAB_BASE_URL","required": false,"description": "default https://gitlab.com"}
+  ],
+  "outputs": {"format": "json", "path": ".ai-sdlc/adapter-out/"}
+}

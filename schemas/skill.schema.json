@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "title": "Skill Frontmatter",
+  "type": "object",
+  "required": ["name", "description"],
+  "properties": {
+    "name":        {"type": "string", "pattern": "^[a-z][a-z0-9-]*$"},
+    "description": {"type": "string", "minLength": 1},
+    "base_asset":  {"type": "string"},
+    "tuned_for_project": {"type": "boolean"}
+  }
+}

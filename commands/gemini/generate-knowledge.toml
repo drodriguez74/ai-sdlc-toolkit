@@ -1,0 +1,9 @@
+description = "Analyze the codebase and generate a structured knowledge base under .ai-sdlc/knowledge/"
+prompt = """
+Follow prompts/generate-knowledge.prompt.md.
+
+Load skills/using-agent-skills/SKILL.md.
+Check .ai-sdlc/project-profile.yaml — run skills/workspace-analysis/SKILL.md if missing or stale.
+Follow skills/repo-knowledge-generation/SKILL.md.
+Adopt the workspace-analyzer agent.
+"""

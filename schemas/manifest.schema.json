@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "title": "AI SDLC Toolkit Manifest",
+  "type": "object",
+  "required": ["name", "version", "install_root", "agents_dir", "skills_dir", "prompts_dir", "linking"],
+  "properties": {
+    "name":         {"type": "string"},
+    "version":      {"type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+"},
+    "description":  {"type": "string"},
+    "install_root": {"type": "string"},
+    "agents_dir":   {"type": "string"},
+    "skills_dir":   {"type": "string"},
+    "prompts_dir":  {"type": "string"},
+    "commands_dir": {"type": "string"},
+    "tools_dir":    {"type": "string"},
+    "references_dir": {"type": "string"},
+    "schemas_dir":  {"type": "string"},
+    "linking": {
+      "type": "object",
+      "required": ["default_mode", "project_paths", "override_paths"],
+      "properties": {
+        "default_mode":  {"enum": ["symlink", "copy"]},
+        "copy_fallback": {"type": "boolean"},
+        "project_paths": {
+          "type": "object",
+          "required": ["agents", "skills", "prompts", "instructions"],
+          "additionalProperties": {"type": "string"}
+        },
+        "override_paths": {
+          "type": "object",
+          "required": ["agents", "skills", "prompts", "instructions"],
+          "additionalProperties": {"type": "string"}
+        }
+      }
+    }
+  }
+}

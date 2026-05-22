@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "title": "Agent Frontmatter",
+  "type": "object",
+  "required": ["name", "description"],
+  "properties": {
+    "name":        {"type": "string", "pattern": "^[a-z][a-z0-9-]*$"},
+    "description": {"type": "string", "minLength": 1},
+    "tools":       {"type": "array", "items": {"type": "string"}},
+    "base_asset":  {"type": "string"},
+    "tuned_for_project": {"type": "boolean"},
+    "tuned_at":    {"type": "string"},
+    "project_profile": {"type": "string"}
+  }
+}

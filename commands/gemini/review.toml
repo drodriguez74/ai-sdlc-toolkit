@@ -1,0 +1,9 @@
+description = "Review a diff for correctness, security, performance, and tests"
+prompt = """
+Follow prompts/review.prompt.md.
+
+Load skills/using-agent-skills/SKILL.md.
+Follow skills/code-review-and-quality/SKILL.md.
+Apply skills/security-and-hardening/SKILL.md for security-sensitive code.
+Adopt the code-reviewer agent.
+"""

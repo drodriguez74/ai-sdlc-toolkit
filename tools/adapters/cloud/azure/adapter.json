@@ -1,0 +1,13 @@
+{
+  "name": "azure",
+  "domain": "cloud",
+  "commands": {
+    "health":   null,
+    "discover": null,
+    "read":     null
+  },
+  "env": [
+    {"name": "AZURE_SUBSCRIPTION_ID", "required": true, "description": "Azure subscription ID"}
+  ],
+  "outputs": {"format": "json", "path": ".ai-sdlc/adapter-out/"}
+}

@@ -1,0 +1,9 @@
+description = "Add or improve automated tests at the right layer"
+prompt = """
+Follow prompts/test.prompt.md.
+
+Load skills/using-agent-skills/SKILL.md.
+Follow skills/test-strategy/SKILL.md.
+Apply skills/test-driven-development/SKILL.md.
+Adopt the test-engineer agent.
+"""

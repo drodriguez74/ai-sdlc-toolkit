@@ -1,0 +1,20 @@
+{
+  "name": "github-actions",
+  "domain": "ci-cd",
+  "commands": {
+    "health":    "scripts/health.py",
+    "discover":  "scripts/workflow_list.py",
+    "search":    "scripts/run_list.py",
+    "read":      "scripts/run_read.py",
+    "logs":      "scripts/run_logs.py",
+    "trigger":   "scripts/run_trigger.py",
+    "rerun":     "scripts/run_rerun.py",
+    "create":    null,
+    "update":    null
+  },
+  "env": [
+    {"name": "GITHUB_TOKEN", "required": true,  "description": "PAT with actions:read scope; actions:write for trigger and rerun"},
+    {"name": "GITHUB_REPO",  "required": true,  "description": "owner/repo"}
+  ],
+  "outputs": {"format": "json", "path": ".ai-sdlc/adapter-out/"}
+}

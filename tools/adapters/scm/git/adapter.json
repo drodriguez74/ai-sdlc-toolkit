@@ -1,0 +1,16 @@
+{
+  "name": "git",
+  "domain": "scm",
+  "commands": {
+    "health":        "scripts/diff.py --help",
+    "diff":          "scripts/diff.py",
+    "changed_files": "scripts/changed_files.py",
+    "search":        null,
+    "read":          null,
+    "create":        null,
+    "update":        null,
+    "discover":      null
+  },
+  "env": [],
+  "outputs": {"format": "json", "path": ".ai-sdlc/adapter-out/"}
+}

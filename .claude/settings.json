@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(./doctor.sh)",
+      "Bash(./refresh-project-links.sh*)",
+      "Bash(./tune-project.sh*)",
+      "Bash(python3 tools/core/*)"
+    ]
+  }
+}
