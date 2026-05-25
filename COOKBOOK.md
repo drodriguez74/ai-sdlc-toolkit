@@ -21,11 +21,21 @@ Run once after cloning or creating a repo.
 
 # Tune agents and skills to your project's specific stack and conventions
 /tune-agents
+
+# Generate human-facing and AI-facing documentation from the profile
+/generate-readme
+/generate-agents-md
 ```
 
 **What you get:** `.ai-sdlc/project-profile.yaml`, `.ai-sdlc/project-context.md`,
 `.ai-sdlc/knowledge/` (architecture, patterns, decisions, integrations, glossary),
-and project-specific agent/skill overrides under `.github/*-overrides/`.
+project-specific agent/skill overrides under `.github/*-overrides/`, a
+`README.md` for human readers, and an `AGENTS.md` that orients every AI tool
+that works in the repo.
+
+**Tip:** Run `/audit-ai-harness` after setup to confirm no duplication or
+contradictions exist across `AGENTS.md`, `CLAUDE.md`, and
+`.github/copilot-instructions.md` before inviting collaborators.
 
 ---
 
@@ -423,6 +433,43 @@ Read .github/agents/tech-lead.md, then review this architecture proposal.
 
 ---
 
+## 19. Maintain AI Harness File Health
+
+AI harness files (`AGENTS.md`, `CLAUDE.md`, `.github/copilot-instructions.md`)
+drift over time — commands go stale, content gets duplicated across files, and
+conflicting instructions appear. Run this audit periodically and always after
+a significant structural change.
+
+```
+/audit-ai-harness
+```
+
+The audit checks for:
+- **Missing baseline** — tool-specific files exist but no `AGENTS.md`
+- **Context bloat** — the same content duplicated across multiple harness files
+- **Context rot** — stale commands, paths, or stack references that no longer match the repo
+- **Register violations** — AI directives in `README.md`, or narrative prose in `AGENTS.md`
+- **Contradictions** — conflicting instructions across files
+
+Output is a prioritised findings list (`CRITICAL` → `LOW`) with file:line
+references, the exact violation quoted, and a concrete fix for each. No files
+are modified until you explicitly ask after reviewing the report.
+
+**When to run:**
+- After `/onboard` or initial setup to validate the generated files
+- After a major refactor, rename, or stack change
+- When agent behaviour has become inconsistent across tools
+- Before tagging a release
+
+**To regenerate harness files from scratch after a major change:**
+```
+/generate-agents-md
+/generate-readme
+/audit-ai-harness   ← confirm no issues before committing
+```
+
+---
+
 ## Quick Reference: All Commands
 
 | Command | Purpose | Primary agent |
@@ -431,6 +478,9 @@ Read .github/agents/tech-lead.md, then review this architecture proposal.
 | `/analyze-workspace` | Profile repo only | `workspace-analyzer` |
 | `/generate-knowledge` | Generate knowledge base (profile must exist) | `workspace-analyzer` |
 | `/tune-agents` | Generate project-specific overrides | `agent-tuner` |
+| `/generate-readme` | Generate README.md from project introspection | `documentation-specialist` |
+| `/generate-agents-md` | Generate AGENTS.md for AI agent orientation | `documentation-specialist` |
+| `/audit-ai-harness` | Audit harness files for bloat, rot, and contradictions | `documentation-specialist` |
 | `/spec` | Write a specification | `product-manager` / `tech-lead` |
 | `/plan` | Break spec into tasks | `tech-lead` |
 | `/build` | Implement incrementally | relevant developer |
