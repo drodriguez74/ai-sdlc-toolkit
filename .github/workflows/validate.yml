@@ -1,0 +1,40 @@
+name: Validate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint-shell:
+    name: Lint shell scripts
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install shellcheck
+        run: sudo apt-get install -y shellcheck
+      - name: Shellcheck
+        run: shellcheck install.sh link-to-project.sh refresh-project-links.sh tune-project.sh upgrade.sh doctor.sh
+
+  validate-frontmatter:
+    name: Validate frontmatter
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Validate agent/skill/prompt frontmatter
+        run: python tools/core/validate_frontmatter.py
+
+  validate-manifest:
+    name: Validate manifest template
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Validate manifest schema
+        run: python tools/core/validate_manifest.py
