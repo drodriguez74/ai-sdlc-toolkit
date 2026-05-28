@@ -1,0 +1,1102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ai-sdlc-toolkit — Visual Explainer</title>
+<link href="https://fonts.googleapis.com/css2?family=Fragment+Mono:ital@0;1&family=Clash+Display:wght@400;500;600;700&family=Bricolage+Grotesque:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --void: #07090d;
+  --ink: #0e1118;
+  --raised: #141820;
+  --card: #181e28;
+  --border: #222a38;
+  --border2: #2d3748;
+  --text: #dde3ef;
+  --muted: #4e5a72;
+  --dim: #2d3748;
+
+  /* accent palette — one per layer */
+  --shell:    #f59e0b;   /* amber   — install/CLI shell scripts */
+  --agents:   #3b82f6;   /* blue    — AI agents/personas */
+  --skills:   #10b981;   /* emerald — skills/workflow guides */
+  --commands: #f97316;   /* orange  — slash commands */
+  --harness:  #a78bfa;   /* violet  — harness adapters */
+  --tools:    #ec4899;   /* pink    — tools/adapters */
+  --refs:     #06b6d4;   /* cyan    — references/schemas */
+  --project:  #84cc16;   /* lime    — project linking */
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--void);
+  color: var(--text);
+  font-family: 'Bricolage Grotesque', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── scanline texture ── */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,0,0,0.12) 2px,
+    rgba(0,0,0,0.12) 4px
+  );
+  pointer-events: none;
+  z-index: 9999;
+}
+
+.page { max-width: 1060px; margin: 0 auto; padding: 0 24px 120px; }
+
+/* ─── HEADER ─── */
+header {
+  padding: 56px 0 48px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 56px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 24px;
+  align-items: end;
+  opacity: 0;
+  animation: rise 0.6s 0.1s forwards;
+}
+
+.repo-path {
+  font-family: 'Fira Code', monospace;
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 0.08em;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.repo-path .slash { color: var(--border2); }
+.repo-path .name  { color: var(--shell); }
+
+h1 {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: clamp(30px, 5vw, 54px);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  margin-bottom: 12px;
+}
+
+h1 em {
+  font-style: normal;
+  color: var(--shell);
+}
+
+.tagline {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.7;
+  max-width: 480px;
+  font-weight: 400;
+}
+
+.tagline strong { color: var(--text); font-weight: 500; }
+
+.header-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-end;
+}
+
+.stat-pill {
+  font-family: 'Fira Code', monospace;
+  font-size: 11px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--border2);
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.stat-pill span { color: var(--text); }
+
+/* ─── SECTION LABELS ─── */
+.sec-label {
+  font-family: 'Fira Code', monospace;
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sec-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+.sec-title {
+  font-size: clamp(20px, 3vw, 28px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 20px;
+  line-height: 1.1;
+}
+
+.sec { margin-bottom: 64px; }
+
+/* ─── THE BIG MENTAL MODEL DIAGRAM ─── */
+.mental-model {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+
+.mm-header {
+  background: var(--raised);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mm-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+.mm-title {
+  font-family: 'Fira Code', monospace;
+  font-size: 11px;
+  color: var(--muted);
+  margin-left: 6px;
+}
+
+.mm-body { padding: 28px 24px 24px; }
+
+/* The flow: Toolkit → link → project repo */
+.flow-diagram {
+  display: grid;
+  grid-template-columns: 1fr 60px 1fr;
+  gap: 0;
+  align-items: center;
+  margin-bottom: 32px;
+}
+
+.flow-box {
+  background: var(--raised);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 18px 20px;
+}
+
+.flow-box-label {
+  font-family: 'Fira Code', monospace;
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.flow-box-name {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin-bottom: 8px;
+}
+
+.flow-box-items {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.flow-item {
+  font-family: 'Fira Code', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.flow-item::before { content: '→'; color: var(--border2); flex-shrink: 0; }
+
+.flow-arrow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.arrow-shaft {
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(to right, var(--border2), var(--shell), var(--border2));
+  position: relative;
+}
+
+.arrow-shaft::after {
+  content: '→';
+  position: absolute;
+  right: -10px;
+  top: -10px;
+  color: var(--shell);
+  font-size: 16px;
+}
+
+.arrow-label {
+  font-family: 'Fira Code', monospace;
+  font-size: 8px;
+  color: var(--muted);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* ─── DIRECTORY TREE ─── */
+.dir-tree {
+  background: var(--raised);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px;
+  font-family: 'Fira Code', monospace;
+  font-size: 12px;
+  line-height: 1.9;
+}
+
+.dt-root { color: var(--shell); font-weight: 500; margin-bottom: 4px; }
+.dt-dir  { color: var(--text); cursor: pointer; transition: color 0.2s; }
+.dt-dir:hover { color: var(--shell); }
+.dt-file { color: var(--muted); }
+.dt-badge {
+  display: inline-block;
+  font-size: 8.5px;
+  padding: 1px 6px;
+  border-radius: 3px;
+  margin-left: 8px;
+  vertical-align: middle;
+  letter-spacing: 0.1em;
+}
+
+/* ─── LAYER CARDS ─── */
+.layers {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+@media(max-width:768px) {
+  .flow-diagram { grid-template-columns: 1fr; }
+  .flow-arrow { transform: rotate(90deg); margin: 12px auto; width: 60px; }
+  .override-diagram { grid-template-columns: 1fr; }
+  .od-arrow { transform: rotate(90deg); margin: 8px auto; }
+}
+
+@media(max-width:620px) { .layers { grid-template-columns: 1fr; } }
+
+@media(prefers-reduced-motion: reduce) {
+  .reveal, .stagger > *, .lc-step {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  header { animation: none; opacity: 1; }
+}
+
+.layer-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 22px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.25s, transform 0.25s;
+  cursor: default;
+}
+
+.layer-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--lc, #888);
+}
+
+.layer-card::after {
+  content: '';
+  position: absolute;
+  top: -60px; right: -60px;
+  width: 200px; height: 200px;
+  border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--lc, #888) 18%, transparent) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.layer-card:hover {
+  border-color: var(--lc, #888);
+  transform: translateY(-4px);
+}
+
+.lc-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.lc-icon { font-size: 26px; line-height: 1; }
+
+.lc-count {
+  font-family: 'Fira Code', monospace;
+  font-size: 28px;
+  font-weight: 500;
+  color: var(--lc, #888);
+  line-height: 1;
+  opacity: 0.6;
+}
+
+.lc-name {
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--lc, #888);
+  margin-bottom: 4px;
+}
+
+.lc-path {
+  font-family: 'Fira Code', monospace;
+  font-size: 9px;
+  color: var(--muted);
+  letter-spacing: 0.1em;
+  margin-bottom: 10px;
+}
+
+.lc-desc {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.lc-examples {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 12px;
+}
+
+.lc-ex {
+  font-family: 'Fira Code', monospace;
+  font-size: 9px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--lc, #888) 10%, transparent);
+  color: color-mix(in srgb, var(--lc, #888) 80%, var(--text));
+  border: 1px solid color-mix(in srgb, var(--lc, #888) 22%, transparent);
+  letter-spacing: 0.06em;
+}
+
+/* ─── SLASH COMMAND FLOW ─── */
+.cmd-flow {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 28px 24px;
+  margin-bottom: 16px;
+}
+
+.cmd-row {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 16px;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.2s;
+  border-radius: 6px;
+  padding: 10px 8px;
+  margin: 0 -8px;
+}
+
+.cmd-row:last-child { border-bottom: none; }
+.cmd-row:hover { background: var(--raised); }
+
+.cmd-name {
+  font-family: 'Fira Code', monospace;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--commands);
+}
+
+.cmd-detail {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.cmd-arrow {
+  font-family: 'Fira Code', monospace;
+  font-size: 10px;
+  color: var(--muted);
+}
+
+.cmd-agent {
+  padding: 3px 9px;
+  border-radius: 4px;
+  border: 1px solid var(--border2);
+  color: var(--agents);
+  background: color-mix(in srgb, var(--agents) 10%, transparent);
+  font-family: 'Fira Code', monospace;
+  font-size: 9px;
+  letter-spacing: 0.05em;
+}
+
+.cmd-skill {
+  padding: 3px 9px;
+  border-radius: 4px;
+  border: 1px solid var(--border2);
+  color: var(--skills);
+  background: color-mix(in srgb, var(--skills) 10%, transparent);
+  font-family: 'Fira Code', monospace;
+  font-size: 9px;
+  letter-spacing: 0.05em;
+}
+
+.cmd-desc { font-size: 11px; color: var(--muted); }
+
+/* ─── HARNESS TABLE ─── */
+.harness-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.harness-table th {
+  font-family: 'Fira Code', monospace;
+  font-size: 9px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 10px 14px;
+  text-align: left;
+  border-bottom: 2px solid var(--border);
+  background: var(--raised);
+}
+
+.harness-table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+  font-family: 'Fira Code', monospace;
+  font-size: 10px;
+}
+
+.harness-table tr:last-child td { border-bottom: none; }
+.harness-table tr:hover td { background: var(--raised); }
+
+.harness-table td.asset { color: var(--text); font-weight: 500; }
+.harness-table td.supported { color: var(--skills); }
+.harness-table td.partial   { color: var(--shell); }
+.harness-table td.path { color: var(--muted); font-size: 9.5px; }
+
+.ht-wrap {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* ─── LIFECYCLE TIMELINE ─── */
+.lifecycle {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.lifecycle::before {
+  content: '';
+  position: absolute;
+  left: 20px;
+  top: 24px;
+  bottom: 24px;
+  width: 2px;
+  background: linear-gradient(to bottom, var(--shell), var(--agents), var(--skills), var(--commands), var(--project));
+}
+
+.lc-step {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  padding: 10px 0;
+  opacity: 0;
+  transform: translateX(-12px);
+  transition: opacity 0.4s, transform 0.4s;
+}
+
+.lc-step.in { opacity: 1; transform: translateX(0); }
+
+.lc-dot {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  border: 2px solid var(--s-color, #888);
+  background: color-mix(in srgb, var(--s-color, #888) 15%, var(--void));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.lc-content {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 18px;
+  flex: 1;
+  margin-bottom: 10px;
+  transition: border-color 0.2s;
+}
+
+.lc-content:hover { border-color: var(--s-color, #888); }
+
+.lc-step-title {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: var(--s-color, var(--text));
+}
+
+.lc-step-cmd {
+  font-family: 'Fira Code', monospace;
+  font-size: 10px;
+  color: var(--commands);
+  margin-bottom: 4px;
+}
+
+.lc-step-desc {
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.65;
+}
+
+/* ─── OVERRIDE MODEL ─── */
+.override-diagram {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  display: grid;
+  grid-template-columns: 1fr 40px 1fr;
+  gap: 8px;
+  align-items: center;
+}
+
+.od-col {
+  background: var(--raised);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.od-title {
+  font-family: 'Fira Code', monospace;
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+
+.od-file {
+  font-family: 'Fira Code', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  padding: 4px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.od-file:last-child { border-bottom: none; }
+.od-file.override { color: var(--project); }
+
+.od-arrow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  font-size: 20px;
+  color: var(--muted);
+}
+
+/* ─── ANIMATIONS ─── */
+@keyframes rise {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.55s, transform 0.55s;
+}
+
+.reveal.in { opacity: 1; transform: translateY(0); }
+
+.stagger > * {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.45s, transform 0.45s;
+}
+
+.stagger.in > * { opacity: 1; transform: translateY(0); }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <header>
+    <div>
+      <div class="repo-path">
+        <span>github.com</span><span class="slash">/</span>
+        <span>drodriguez74</span><span class="slash">/</span>
+        <span class="name">ai-sdlc-toolkit</span>
+      </div>
+      <h1>AI <em>SDLC</em><br>Toolkit</h1>
+      <p class="tagline">A <strong>provider-neutral</strong> toolkit that installs a full software development lifecycle — agents, skills, slash-commands — into any repo and wires them to any AI CLI: Claude Code, Copilot, Gemini CLI, Codex, or Cursor.</p>
+    </div>
+    <div class="header-stats">
+      <div class="stat-pill">Python <span>73.7%</span></div>
+      <div class="stat-pill">Shell <span>25.4%</span></div>
+      <div class="stat-pill"><span>28</span> agents</div>
+      <div class="stat-pill"><span>36+</span> skills</div>
+      <div class="stat-pill">v<span>1.0.0</span></div>
+    </div>
+  </header>
+
+  <!-- MENTAL MODEL -->
+  <div class="sec reveal" id="s0">
+    <div class="sec-label">§ 01</div>
+    <div class="sec-title">How It Works — The Big Picture</div>
+
+    <div class="mental-model">
+      <div class="mm-header">
+        <div class="mm-dot" style="background:#ff5f57"></div>
+        <div class="mm-dot" style="background:#febc2e"></div>
+        <div class="mm-dot" style="background:#28c840"></div>
+        <span class="mm-title">architecture.overview</span>
+      </div>
+      <div class="mm-body">
+
+        <div class="flow-diagram">
+          <!-- GLOBAL TOOLKIT BOX -->
+          <div class="flow-box" style="border-color:#f59e0b44">
+            <div class="flow-box-label" style="color:var(--shell)">Global Install</div>
+            <div class="flow-box-name">~/.copilot/<br>ai-sdlc-toolkit/</div>
+            <div class="flow-box-items">
+              <span class="flow-item" style="color:var(--agents)">28 agent personas</span>
+              <span class="flow-item" style="color:var(--skills)">36+ skill guides</span>
+              <span class="flow-item" style="color:var(--commands)">slash commands</span>
+              <span class="flow-item" style="color:var(--tools)">adapter tools</span>
+              <span class="flow-item" style="color:var(--refs)">references & schemas</span>
+            </div>
+          </div>
+
+          <!-- ARROW -->
+          <div class="flow-arrow">
+            <div class="arrow-shaft"></div>
+            <div class="arrow-label">link-to-project.sh</div>
+          </div>
+
+          <!-- PROJECT REPO BOX -->
+          <div class="flow-box" style="border-color:#84cc1644">
+            <div class="flow-box-label" style="color:var(--project)">Any Project Repo</div>
+            <div class="flow-box-name">~/repos/<br>my-project/</div>
+            <div class="flow-box-items">
+              <span class="flow-item" style="color:var(--project)">.ai-sdlc/project-context.md</span>
+              <span class="flow-item" style="color:var(--harness)">.claude/commands/ (symlinks)</span>
+              <span class="flow-item" style="color:var(--harness)">.github/agents/ (symlinks)</span>
+              <span class="flow-item" style="color:var(--harness)">.github/skills/ (symlinks)</span>
+              <span class="flow-item" style="color:var(--muted)">*-overrides/ (project custom)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- DIR TREE -->
+        <div class="dir-tree">
+<div class="dt-root">~/.copilot/ai-sdlc-toolkit/</div>
+<div style="padding-left:16px">
+  <div class="dt-dir">├── agents/<span class="dt-badge" style="background:#3b82f620;color:var(--agents);border:1px solid #3b82f640">28 persona .md files</span></div>
+  <div class="dt-dir">├── skills/<span class="dt-badge" style="background:#10b98120;color:var(--skills);border:1px solid #10b98140">36+ workflow SKILL.md files</span></div>
+  <div class="dt-dir">├── commands/<span class="dt-badge" style="background:#f9731620;color:var(--commands);border:1px solid #f9731640">harness-specific bindings</span></div>
+  <div class="dt-dir">├── prompts/<span class="dt-badge" style="background:#f9731620;color:var(--commands);border:1px solid #f9731640">provider-neutral prompts</span></div>
+  <div class="dt-dir">├── harness/<span class="dt-badge" style="background:#a78bfa20;color:var(--harness);border:1px solid #a78bfa40">per-AI awareness templates</span></div>
+  <div class="dt-dir">├── tools/<span class="dt-badge" style="background:#ec489920;color:var(--tools);border:1px solid #ec489940">core helpers + adapter packs</span></div>
+  <div class="dt-dir">├── references/<span class="dt-badge" style="background:#06b6d420;color:var(--refs);border:1px solid #06b6d440">patterns, checklists, anatomy</span></div>
+  <div class="dt-dir">├── schemas/<span class="dt-badge" style="background:#06b6d420;color:var(--refs);border:1px solid #06b6d440">JSON validation schemas</span></div>
+  <div class="dt-file">├── CLAUDE.md &nbsp; CODEX.md &nbsp; GEMINI.md &nbsp; AGENTS.md</div>
+  <div class="dt-file">├── install.sh &nbsp; upgrade.sh &nbsp; doctor.sh</div>
+  <div class="dt-file">└── link-to-project.sh &nbsp; tune-project.sh</div>
+</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- LAYER CARDS -->
+  <div class="sec reveal" id="s1">
+    <div class="sec-label">§ 02</div>
+    <div class="sec-title">The Seven Asset Layers</div>
+    <div class="layers stagger" id="layersGrid">
+
+      <div class="layer-card" style="--lc:var(--agents)">
+        <div class="lc-top">
+          <div class="lc-icon">🧠</div>
+          <div class="lc-count">28</div>
+        </div>
+        <div class="lc-name">Agents</div>
+        <div class="lc-path">agents/*.md</div>
+        <div class="lc-desc">Markdown persona files that define AI roles. Each encodes the mindset, priorities, and review lens of a senior specialist. Load one per task to get targeted perspective.</div>
+        <div class="lc-examples">
+          <span class="lc-ex">tech-lead</span>
+          <span class="lc-ex">product-owner</span>
+          <span class="lc-ex">qa-engineer</span>
+          <span class="lc-ex">security-reviewer</span>
+          <span class="lc-ex">cloud-architect</span>
+          <span class="lc-ex">data-engineer</span>
+          <span class="lc-ex">docs-writer</span>
+          <span class="lc-ex">orchestrator</span>
+        </div>
+      </div>
+
+      <div class="layer-card" style="--lc:var(--skills)">
+        <div class="lc-top">
+          <div class="lc-icon">📖</div>
+          <div class="lc-count">36+</div>
+        </div>
+        <div class="lc-name">Skills</div>
+        <div class="lc-path">skills/*/SKILL.md</div>
+        <div class="lc-desc">Workflow guides encoding senior engineering practice. Each skill is a structured playbook — follow it before acting. Covers spec-driven dev, TDD, code review, debugging, shipping, and more.</div>
+        <div class="lc-examples">
+          <span class="lc-ex">spec-driven-dev</span>
+          <span class="lc-ex">tdd</span>
+          <span class="lc-ex">code-review</span>
+          <span class="lc-ex">debug</span>
+          <span class="lc-ex">ship</span>
+          <span class="lc-ex">refactor</span>
+        </div>
+      </div>
+
+      <div class="layer-card" style="--lc:var(--commands)">
+        <div class="lc-top">
+          <div class="lc-icon">⚡</div>
+          <div class="lc-count">/cmd</div>
+        </div>
+        <div class="lc-name">Commands</div>
+        <div class="lc-path">commands/ + prompts/</div>
+        <div class="lc-desc">Slash-command entry points wired to agents and skills. Provider-neutral prompts in <code style="font-family:Fira Code;font-size:10px">prompts/</code> and harness-specific bindings in <code style="font-family:Fira Code;font-size:10px">commands/</code>. Type <code style="font-family:Fira Code;font-size:10px">/spec</code> and the right skill fires.</div>
+        <div class="lc-examples">
+          <span class="lc-ex">/spec</span>
+          <span class="lc-ex">/plan</span>
+          <span class="lc-ex">/build</span>
+          <span class="lc-ex">/review</span>
+          <span class="lc-ex">/ship</span>
+          <span class="lc-ex">/debug</span>
+          <span class="lc-ex">/onboard</span>
+        </div>
+      </div>
+
+      <div class="layer-card" style="--lc:var(--harness)">
+        <div class="lc-top">
+          <div class="lc-icon">🔌</div>
+          <div class="lc-count">×4</div>
+        </div>
+        <div class="lc-name">Harness</div>
+        <div class="lc-path">harness/ + *.md awareness files</div>
+        <div class="lc-desc">Per-AI-CLI awareness templates and root instruction files. CLAUDE.md, GEMINI.md, CODEX.md, AGENTS.md tell each harness where to find assets and how to load them correctly.</div>
+        <div class="lc-examples">
+          <span class="lc-ex">CLAUDE.md</span>
+          <span class="lc-ex">GEMINI.md</span>
+          <span class="lc-ex">CODEX.md</span>
+          <span class="lc-ex">AGENTS.md</span>
+        </div>
+      </div>
+
+      <div class="layer-card" style="--lc:var(--tools)">
+        <div class="lc-top">
+          <div class="lc-icon">🔧</div>
+          <div class="lc-count">∞</div>
+        </div>
+        <div class="lc-name">Tools / Adapters</div>
+        <div class="lc-path">tools/</div>
+        <div class="lc-desc">Provider-neutral integrations for issue trackers (Jira, Linear), SCM (GitHub, GitLab), CI/CD, observability, cloud providers, knowledge bases, and security alert surfaces.</div>
+        <div class="lc-examples">
+          <span class="lc-ex">issue-tracker</span>
+          <span class="lc-ex">scm</span>
+          <span class="lc-ex">ci-cd</span>
+          <span class="lc-ex">observability</span>
+          <span class="lc-ex">security</span>
+          <span class="lc-ex">cloud</span>
+        </div>
+      </div>
+
+      <div class="layer-card" style="--lc:var(--refs)">
+        <div class="lc-top">
+          <div class="lc-icon">📐</div>
+          <div class="lc-count">ref</div>
+        </div>
+        <div class="lc-name">References & Schemas</div>
+        <div class="lc-path">references/ + schemas/</div>
+        <div class="lc-desc">Canonical patterns, checklists, and anatomy docs that define the standard for new agents, skills, and adapters. JSON schemas validate manifest and config files at install time.</div>
+        <div class="lc-examples">
+          <span class="lc-ex">agent-anatomy.md</span>
+          <span class="lc-ex">skill-anatomy.md</span>
+          <span class="lc-ex">adapter-contract.md</span>
+          <span class="lc-ex">manifest schema</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- COMMAND → AGENT → SKILL FLOW -->
+  <div class="sec reveal" id="s2">
+    <div class="sec-label">§ 03</div>
+    <div class="sec-title">Slash Commands → Agent + Skill Routing</div>
+    <div class="cmd-flow">
+      <div class="cmd-row">
+        <span class="cmd-name">/onboard</span>
+        <div class="cmd-detail">
+          <span class="cmd-arrow">→</span>
+          <span class="cmd-agent">orchestrator</span>
+          <span class="cmd-skill">project-profiling</span>
+          <span class="cmd-desc">Scans repo, generates .ai-sdlc/project-context.md knowledge base</span>
+        </div>
+      </div>
+      <div class="cmd-row">
+        <span class="cmd-name">/spec</span>
+        <div class="cmd-detail">
+          <span class="cmd-arrow">→</span>
+          <span class="cmd-agent">product-owner</span>
+          <span class="cmd-skill">spec-driven-dev</span>
+          <span class="cmd-desc">Produces structured requirements spec from idea to acceptance criteria</span>
+        </div>
+      </div>
+      <div class="cmd-row">
+        <span class="cmd-name">/plan</span>
+        <div class="cmd-detail">
+          <span class="cmd-arrow">→</span>
+          <span class="cmd-agent">tech-lead</span>
+          <span class="cmd-skill">architecture-planning</span>
+          <span class="cmd-desc">Breaks spec into tasks, identifies dependencies, creates implementation plan</span>
+        </div>
+      </div>
+      <div class="cmd-row">
+        <span class="cmd-name">/build</span>
+        <div class="cmd-detail">
+          <span class="cmd-arrow">→</span>
+          <span class="cmd-agent">tech-lead</span>
+          <span class="cmd-skill">tdd</span>
+          <span class="cmd-desc">Implements features following TDD — tests first, code second</span>
+        </div>
+      </div>
+      <div class="cmd-row">
+        <span class="cmd-name">/review</span>
+        <div class="cmd-detail">
+          <span class="cmd-arrow">→</span>
+          <span class="cmd-agent">security-reviewer</span>
+          <span class="cmd-skill">code-review</span>
+          <span class="cmd-desc">Multi-lens review: correctness, security, performance, maintainability</span>
+        </div>
+      </div>
+      <div class="cmd-row">
+        <span class="cmd-name">/debug</span>
+        <div class="cmd-detail">
+          <span class="cmd-arrow">→</span>
+          <span class="cmd-agent">tech-lead</span>
+          <span class="cmd-skill">debugging</span>
+          <span class="cmd-desc">Systematic root-cause analysis with hypothesis-driven investigation</span>
+        </div>
+      </div>
+      <div class="cmd-row">
+        <span class="cmd-name">/ship</span>
+        <div class="cmd-detail">
+          <span class="cmd-arrow">→</span>
+          <span class="cmd-agent">cloud-architect</span>
+          <span class="cmd-skill">shipping</span>
+          <span class="cmd-desc">Pre-flight checklist, CI/CD integration, deployment validation</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HARNESS COMPATIBILITY -->
+  <div class="sec reveal" id="s3">
+    <div class="sec-label">§ 04</div>
+    <div class="sec-title">Harness Compatibility Matrix</div>
+    <div class="ht-wrap">
+      <table class="harness-table">
+        <thead>
+          <tr>
+            <th>Asset</th>
+            <th>GitHub Copilot</th>
+            <th>Claude Code</th>
+            <th>Gemini CLI</th>
+            <th>Codex</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="asset">Agents</td>
+            <td class="partial path">#file attach only<br>→ .github/agents/</td>
+            <td class="supported path">✓ native<br>→ .github/agents/</td>
+            <td class="supported path">✓ native<br>→ .github/agents/</td>
+            <td class="supported path">✓ native<br>→ .github/agents/</td>
+          </tr>
+          <tr>
+            <td class="asset">Skills</td>
+            <td class="partial path">#file attach only<br>→ .github/skills/</td>
+            <td class="supported path">✓ native<br>→ .github/skills/</td>
+            <td class="supported path">✓ native<br>→ .github/skills/</td>
+            <td class="supported path">✓ native<br>→ .github/skills/</td>
+          </tr>
+          <tr>
+            <td class="asset">Prompts</td>
+            <td class="supported path">✓ .github/prompts/</td>
+            <td class="supported path">✓ .claude/commands/</td>
+            <td class="supported path">✓ .gemini/commands/</td>
+            <td class="supported path">✓ .github/prompts/</td>
+          </tr>
+          <tr>
+            <td class="asset">Instructions</td>
+            <td class="supported path">✓ copilot-instructions.md<br>.github/instructions/</td>
+            <td class="supported path">✓ CLAUDE.md</td>
+            <td class="supported path">✓ GEMINI.md</td>
+            <td class="supported path">✓ CODEX.md</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- LIFECYCLE STEPS -->
+  <div class="sec reveal" id="s4">
+    <div class="sec-label">§ 05</div>
+    <div class="sec-title">Quick-Start Lifecycle</div>
+    <div class="lifecycle">
+      <div class="lc-step" style="--s-color:var(--shell)">
+        <div class="lc-dot">⬇</div>
+        <div class="lc-content">
+          <div class="lc-step-title">1. Install Globally</div>
+          <div class="lc-step-cmd">$ ./install.sh</div>
+          <div class="lc-step-desc">Copies toolkit to <code style="font-family:Fira Code;font-size:10px">~/.copilot/ai-sdlc-toolkit/</code> and resolves <code style="font-family:Fira Code;font-size:10px">manifest.json</code> with absolute paths. Run <code style="font-family:Fira Code;font-size:10px">doctor.sh</code> to validate.</div>
+        </div>
+      </div>
+      <div class="lc-step" style="--s-color:var(--project)">
+        <div class="lc-dot">🔗</div>
+        <div class="lc-content">
+          <div class="lc-step-title">2. Link to a Project</div>
+          <div class="lc-step-cmd">$ ~/.copilot/ai-sdlc-toolkit/link-to-project.sh /path/to/repo</div>
+          <div class="lc-step-desc">Creates symlinks (or copies) from the global toolkit into the project's harness discovery paths. Respects project-level overrides in <code style="font-family:Fira Code;font-size:10px">*-overrides/</code> folders — those always win.</div>
+        </div>
+      </div>
+      <div class="lc-step" style="--s-color:var(--harness)">
+        <div class="lc-dot">🎛</div>
+        <div class="lc-content">
+          <div class="lc-step-title">3. Tune for the Project</div>
+          <div class="lc-step-cmd">$ ~/.copilot/ai-sdlc-toolkit/tune-project.sh /path/to/repo</div>
+          <div class="lc-step-desc">Two-phase tuning: first profiles the repo's language, framework, and conventions; then annotates agents and skills with project-specific context so every /command is pre-calibrated.</div>
+        </div>
+      </div>
+      <div class="lc-step" style="--s-color:var(--agents)">
+        <div class="lc-dot">🧠</div>
+        <div class="lc-content">
+          <div class="lc-step-title">4. Onboard — Build the Knowledge Base</div>
+          <div class="lc-step-cmd">/onboard</div>
+          <div class="lc-step-desc">The orchestrator agent scans the entire codebase and writes <code style="font-family:Fira Code;font-size:10px">.ai-sdlc/project-context.md</code> — a structured knowledge base loaded at the start of every subsequent session.</div>
+        </div>
+      </div>
+      <div class="lc-step" style="--s-color:var(--commands)">
+        <div class="lc-dot">⚡</div>
+        <div class="lc-content">
+          <div class="lc-step-title">5. Use Slash Commands in Your AI CLI</div>
+          <div class="lc-step-cmd">/spec → /plan → /build → /review → /ship</div>
+          <div class="lc-step-desc">Load <code style="font-family:Fira Code;font-size:10px">project-context.md</code> into your AI session, then invoke commands. Each routes to the right agent persona + skill workflow automatically — no manual context juggling.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OVERRIDE PRECEDENCE -->
+  <div class="sec reveal" id="s5">
+    <div class="sec-label">§ 06</div>
+    <div class="sec-title">Override Precedence Model</div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:18px;line-height:1.7;max-width:540px">Project-local overrides always beat global defaults. You never touch the global toolkit files — all customization lives in your repo's <code style="font-family:Fira Code;font-size:10.5px;color:var(--project)">*-overrides/</code> folders.</p>
+    <div class="override-diagram">
+      <div class="od-col">
+        <div class="od-title" style="color:var(--agents)">Global Toolkit</div>
+        <div class="od-file">agents/tech-lead.md</div>
+        <div class="od-file">agents/qa-engineer.md</div>
+        <div class="od-file">skills/tdd/SKILL.md</div>
+        <div class="od-file">skills/code-review/SKILL.md</div>
+        <div class="od-file">prompts/spec.prompt.md</div>
+      </div>
+      <div class="od-arrow">
+        <span style="color:var(--project)">⟶</span>
+        <span style="font-family:Fira Code;font-size:8px;color:var(--muted);writing-mode:vertical-lr">refresh-project-links.sh</span>
+        <span style="color:var(--project)">⟶</span>
+      </div>
+      <div class="od-col">
+        <div class="od-title" style="color:var(--project)">Active Discovery Paths</div>
+        <div class="od-file">→ global tech-lead.md</div>
+        <div class="od-file override">→ agents-overrides/qa-engineer.md ⬅ project wins</div>
+        <div class="od-file override">→ skills-overrides/tdd/SKILL.md ⬅ project wins</div>
+        <div class="od-file">→ global code-review/SKILL.md</div>
+        <div class="od-file">→ global spec.prompt.md</div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /page -->
+
+<script>
+// Intersection observer for reveals
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (!e.isIntersecting) return;
+    e.target.classList.add('in');
+
+    // stagger children
+    if (e.target.classList.contains('stagger')) {
+      [...e.target.children].forEach((c, i) => {
+        setTimeout(() => c.classList.add('in'), i * 90);
+      });
+    }
+
+    // lifecycle steps
+    e.target.querySelectorAll('.lc-step').forEach((s, i) => {
+      setTimeout(() => s.classList.add('in'), 200 + i * 120);
+    });
+
+    io.unobserve(e.target);
+  });
+}, { threshold: 0.08 });
+
+document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+document.querySelectorAll('.layers').forEach(el => io.observe(el));
+</script>
+</body>
+</html>
