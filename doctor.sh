@@ -24,21 +24,33 @@ echo "==> Validating toolkit at ${SCRIPT_DIR}"
 
 # 1. Required directories.
 for d in agents skills prompts commands tools references schemas harness; do
-  [ -d "${SCRIPT_DIR}/${d}" ] && ok "dir ${d}" || bad "missing dir ${d}"
+  if [ -d "${SCRIPT_DIR}/${d}" ]; then
+    ok "dir ${d}"
+  else
+    bad "missing dir ${d}"
+  fi
 done
 
 # 2. Required root files.
 for f in VERSION manifest.json.tpl README.md \
          install.sh upgrade.sh doctor.sh \
          link-to-project.sh refresh-project-links.sh tune-project.sh; do
-  [ -f "${SCRIPT_DIR}/${f}" ] && ok "file ${f}" || bad "missing file ${f}"
+  if [ -f "${SCRIPT_DIR}/${f}" ]; then
+    ok "file ${f}"
+  else
+    bad "missing file ${f}"
+  fi
 done
 
 # 3. Script executability.
 for f in install.sh upgrade.sh doctor.sh link-to-project.sh \
          refresh-project-links.sh tune-project.sh; do
   if [ -f "${SCRIPT_DIR}/${f}" ]; then
-    [ -x "${SCRIPT_DIR}/${f}" ] && ok "exec ${f}" || bad "not executable: ${f}"
+    if [ -x "${SCRIPT_DIR}/${f}" ]; then
+      ok "exec ${f}"
+    else
+      bad "not executable: ${f}"
+    fi
   fi
 done
 
@@ -55,15 +67,18 @@ fi
 
 # 5. Manifest schema validation.
 if [ -x "${SCRIPT_DIR}/tools/core/validate_manifest.py" ]; then
-  python3 "${SCRIPT_DIR}/tools/core/validate_manifest.py" "${SCRIPT_DIR}" \
-    && ok "manifest schema" || bad "manifest schema validation failed"
+  if python3 "${SCRIPT_DIR}/tools/core/validate_manifest.py" "${SCRIPT_DIR}"; then
+    ok "manifest schema"
+  else
+    bad "manifest schema validation failed"
+  fi
 else
   info "skip manifest validation (helper missing)"
 fi
 
 # 6. Secret-pattern scan.
 echo "==> Scanning for secret-like patterns"
-python3 - "${SCRIPT_DIR}" "${ALLOWLIST}" <<'PY'
+if python3 - "${SCRIPT_DIR}" "${ALLOWLIST}" <<'PY'
 import os, re, sys, pathlib
 root = pathlib.Path(sys.argv[1])
 allow_path = pathlib.Path(sys.argv[2])
@@ -102,8 +117,7 @@ if hits == 0:
     print("  [PASS] no secret-like patterns")
 sys.exit(1 if hits else 0)
 PY
-SECRET_RC=$?
-if [ "${SECRET_RC}" -eq 0 ]; then
+then
   PASS=$((PASS+1))
 else
   FAIL=$((FAIL+1))
