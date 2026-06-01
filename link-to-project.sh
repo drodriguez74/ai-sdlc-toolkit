@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
 # link-to-project.sh — Wire a target repo to the AI SDLC Toolkit.
 # Creates .ai-sdlc, .github structure, override folders, and awareness files.
+# Windows: run inside Git Bash / MSYS2 / WSL.
 set -euo pipefail
+
+# Windows Git Bash / MSYS2 may not set HOME; fall back to USERPROFILE.
+: "${HOME:=${USERPROFILE:-$(cd ~ && pwd)}}"
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 TOOLKIT_HOME="${TOOLKIT_HOME:-${SCRIPT_DIR}}"
@@ -11,15 +15,28 @@ VERSION="$(cat "${TOOLKIT_HOME}/VERSION" 2>/dev/null || echo unknown)"
 
 echo "==> Linking ${TARGET} -> toolkit ${TOOLKIT_HOME}"
 
+# Detect installed AI CLIs.
+has_cli() { command -v "$1" >/dev/null 2>&1; }
+HAS_CLAUDE=0; has_cli claude && HAS_CLAUDE=1 || true
+HAS_GEMINI=0; has_cli gemini && HAS_GEMINI=1 || true
+HAS_CODEX=0;  has_cli codex  && HAS_CODEX=1  || true
+
+echo "==> Detected AI CLIs:"
+[ "${HAS_CLAUDE}" -eq 1 ] && echo "    [yes] claude (Claude Code)"  || echo "    [ no] claude  — CLAUDE.md / .claude/ will be skipped"
+[ "${HAS_GEMINI}" -eq 1 ] && echo "    [yes] gemini (Gemini CLI)"   || echo "    [ no] gemini  — GEMINI.md / .gemini/ will be skipped"
+[ "${HAS_CODEX}"  -eq 1 ] && echo "    [yes] codex  (Codex CLI)"    || echo "    [ no] codex   — CODEX.md will be skipped"
+echo "    [yes] copilot-instructions — always included"
+
 mkdir -p \
   "${TARGET}/.ai-sdlc" \
   "${TARGET}/.github" \
   "${TARGET}/.github/agents-overrides" \
   "${TARGET}/.github/skills-overrides" \
   "${TARGET}/.github/prompts-overrides" \
-  "${TARGET}/.github/instructions-overrides" \
-  "${TARGET}/.claude/commands" \
-  "${TARGET}/.gemini/commands"
+  "${TARGET}/.github/instructions-overrides"
+
+[ "${HAS_CLAUDE}" -eq 1 ] && mkdir -p "${TARGET}/.claude/commands" || true
+[ "${HAS_GEMINI}" -eq 1 ] && mkdir -p "${TARGET}/.gemini/commands" || true
 
 # Keep override folders even when empty.
 for d in agents-overrides skills-overrides prompts-overrides instructions-overrides; do
@@ -50,10 +67,11 @@ PY
 }
 
 # Awareness file bodies.
-read -r -d '' AGENTS_BODY <<EOF || true
+read -r -d '' AGENTS_BODY <<'EOF' || true
 # AI SDLC Toolkit Agent Guidance
 
-This repo is linked to the AI SDLC Toolkit at ${TOOLKIT_HOME}.
+This repo is linked to the AI SDLC Toolkit
+(default: ~/.copilot/ai-sdlc-toolkit; override: $TOOLKIT_HOME env var).
 
 Start every task by checking:
 1. .ai-sdlc/project-profile.yaml
@@ -65,15 +83,15 @@ Start every task by checking:
 Load only what you need for the task. Do not load all agents and skills at once.
 
 Project overrides under .github/*-overrides/ take precedence over global defaults.
-Never edit files under ${TOOLKIT_HOME} from a project task.
+Never edit toolkit files from a project task.
 EOF
 
-read -r -d '' COPILOT_BODY <<EOF || true
+read -r -d '' COPILOT_BODY <<'EOF' || true
 # AI SDLC Toolkit
 
 This repository is linked to the global AI SDLC Toolkit.
 
-Toolkit root: ${TOOLKIT_HOME}
+Toolkit root: $TOOLKIT_HOME (default: ~/.copilot/ai-sdlc-toolkit)
 
 ## What Copilot Reads Automatically
 
@@ -102,9 +120,9 @@ VS Code extensions, not file-based definitions.
 EOF
 
 write_managed_block "${TARGET}/AGENTS.md" "${AGENTS_BODY}"
-write_managed_block "${TARGET}/CLAUDE.md" "${AGENTS_BODY}"
-write_managed_block "${TARGET}/GEMINI.md" "${AGENTS_BODY}"
-write_managed_block "${TARGET}/CODEX.md"  "${AGENTS_BODY}"
+[ "${HAS_CLAUDE}" -eq 1 ] && write_managed_block "${TARGET}/CLAUDE.md" "${AGENTS_BODY}" || true
+[ "${HAS_GEMINI}" -eq 1 ] && write_managed_block "${TARGET}/GEMINI.md" "${AGENTS_BODY}" || true
+[ "${HAS_CODEX}"  -eq 1 ] && write_managed_block "${TARGET}/CODEX.md"  "${AGENTS_BODY}" || true
 write_managed_block "${TARGET}/.github/copilot-instructions.md" "${COPILOT_BODY}"
 
 # Build link farms.

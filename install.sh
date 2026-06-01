@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
 # install.sh — Install the AI SDLC Toolkit globally under ~/.copilot/ai-sdlc-toolkit.
 # Idempotent: safe to re-run. Does not overwrite user content outside managed blocks.
+# Windows: run inside Git Bash / MSYS2 / WSL.
 set -euo pipefail
+
+# Windows Git Bash / MSYS2 may not set HOME; fall back to USERPROFILE.
+: "${HOME:=${USERPROFILE:-$(cd ~ && pwd)}}"
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 TOOLKIT_HOME="${TOOLKIT_HOME:-${HOME}/.copilot/ai-sdlc-toolkit}"
@@ -41,6 +45,18 @@ fi
 chmod +x "${TOOLKIT_HOME}"/*.sh 2>/dev/null || true
 find "${TOOLKIT_HOME}/tools" -type f -name "*.sh" -exec chmod +x {} \; 2>/dev/null || true
 find "${TOOLKIT_HOME}/tools" -type f -name "*.py" -exec chmod +x {} \; 2>/dev/null || true
+
+# Detect installed AI CLIs.
+has_cli() { command -v "$1" >/dev/null 2>&1; }
+HAS_CLAUDE=0; has_cli claude && HAS_CLAUDE=1 || true
+HAS_GEMINI=0; has_cli gemini && HAS_GEMINI=1 || true
+HAS_CODEX=0;  has_cli codex  && HAS_CODEX=1  || true
+
+echo "==> Detected AI CLIs:"
+[ "${HAS_CLAUDE}" -eq 1 ] && echo "    [yes] claude (Claude Code)"   || echo "    [ no] claude  — CLAUDE.md will be skipped"
+[ "${HAS_GEMINI}" -eq 1 ] && echo "    [yes] gemini (Gemini CLI)"    || echo "    [ no] gemini  — GEMINI.md will be skipped"
+[ "${HAS_CODEX}"  -eq 1 ] && echo "    [yes] codex  (Codex CLI)"     || echo "    [ no] codex   — CODEX.md will be skipped"
+echo "    [yes] copilot-instructions — always included"
 
 # Awareness files at ~/.copilot/.
 write_managed_block() {
@@ -84,13 +100,13 @@ Then start every task by checking:
 Do not mutate ${TOOLKIT_HOME} from a project task. Use override folders."
 
 write_managed_block "${COPILOT_HOME}/AGENTS.md"  "${AGENTS_BODY}"
-write_managed_block "${COPILOT_HOME}/CLAUDE.md"  "${AGENTS_BODY}"
-write_managed_block "${COPILOT_HOME}/GEMINI.md"  "${AGENTS_BODY}"
-write_managed_block "${COPILOT_HOME}/CODEX.md"   "${AGENTS_BODY}"
+[ "${HAS_CLAUDE}" -eq 1 ] && write_managed_block "${COPILOT_HOME}/CLAUDE.md" "${AGENTS_BODY}" || true
+[ "${HAS_GEMINI}" -eq 1 ] && write_managed_block "${COPILOT_HOME}/GEMINI.md" "${AGENTS_BODY}" || true
+[ "${HAS_CODEX}"  -eq 1 ] && write_managed_block "${COPILOT_HOME}/CODEX.md"  "${AGENTS_BODY}" || true
 
 COPILOT_BODY="# AI SDLC Toolkit
 
-Global toolkit installed at ${TOOLKIT_HOME}.
+Global toolkit installed at \${TOOLKIT_HOME:-~/.copilot/ai-sdlc-toolkit}.
 
 Discovery paths (when linked to a project):
 - Agents: .github/agents/
@@ -98,9 +114,15 @@ Discovery paths (when linked to a project):
 - Prompts: .github/prompts/
 - Instructions: .github/instructions/
 
-Run ${TOOLKIT_HOME}/link-to-project.sh /path/to/repo to wire a repo."
+Run \${TOOLKIT_HOME:-~/.copilot/ai-sdlc-toolkit}/link-to-project.sh /path/to/repo to wire a repo."
 
 write_managed_block "${COPILOT_HOME}/.github/copilot-instructions.md" "${COPILOT_BODY}"
+
+# Wire symlinks for agents/skills/prompts/instructions into ~/.copilot/.github/.
+mkdir -p "${COPILOT_HOME}/.ai-sdlc"
+if [ -x "${TOOLKIT_HOME}/refresh-project-links.sh" ]; then
+  "${TOOLKIT_HOME}/refresh-project-links.sh" "${COPILOT_HOME}"
+fi
 
 # Run doctor.
 if [ -x "${TOOLKIT_HOME}/doctor.sh" ]; then

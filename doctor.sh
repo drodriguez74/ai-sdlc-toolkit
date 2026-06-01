@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 # doctor.sh — Validate toolkit structure, frontmatter, and detect secret-like strings.
+# Windows: run inside Git Bash / MSYS2 / WSL.
 set -uo pipefail
+
+# Windows Git Bash / MSYS2 may not set HOME; fall back to USERPROFILE.
+: "${HOME:=${USERPROFILE:-$(cd ~ && pwd)}}"
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ALLOWLIST="${SCRIPT_DIR}/.doctor-allowlist"

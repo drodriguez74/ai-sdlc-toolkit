@@ -1,12 +1,23 @@
 #!/usr/bin/env bash
 # refresh-project-links.sh — Rebuild .github discovery link farms for a target repo.
 # Idempotent. Prunes stale links before rebuilding. Override files take precedence.
+# Windows: run inside Git Bash / MSYS2 / WSL; symlinks fall back to copies automatically.
 set -euo pipefail
+
+# Windows Git Bash / MSYS2 may not set HOME; fall back to USERPROFILE.
+: "${HOME:=${USERPROFILE:-$(cd ~ && pwd)}}"
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 TOOLKIT_HOME="${TOOLKIT_HOME:-${SCRIPT_DIR}}"
 
-MODE="symlink"
+# On Windows, symlinks require Developer Mode or elevated privileges.
+# Default to copy mode; explicit --symlink flag still overrides this.
+_default_mode="symlink"
+if [[ "${OS:-}" == "Windows_NT" || "${OSTYPE:-}" == msys* || "${OSTYPE:-}" == cygwin* ]]; then
+  _default_mode="copy"
+fi
+
+MODE="${_default_mode}"
 DRY_RUN=0
 PRUNE_ONLY=0
 TARGET=""
